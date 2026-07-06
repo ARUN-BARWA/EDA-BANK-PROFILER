@@ -74,10 +74,10 @@ docs = [
 bank-eda = "bank_eda_profiler.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/<your-username>/bank-eda-profiler"
-Repository = "https://github.com/<your-username>/bank-eda-profiler"
-Issues = "https://github.com/<your-username>/bank-eda-profiler/issues"
-Documentation = "https://github.com/<your-username>/bank-eda-profiler#readme"
+Homepage = "https://github.com/ARUN-BARWA/EDA-BANK-PROFILER"
+Repository = "https://github.com/ARUN-BARWA/EDA-BANK-PROFILER"
+Issues = "https://github.com/ARUN-BARWA/EDA-BANK-PROFILER/issues"
+Documentation = "https://github.com/ARUN-BARWA/EDA-BANK-PROFILER#readme"
 
 [tool.setuptools.packages.find]
 include = ["bank_eda_profiler*"]
