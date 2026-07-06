@@ -1,0 +1,2 @@
+recursive-include bank_eda_profiler/reports/templates *.html
+include config/report_config.example.yaml

@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bank-eda-profiler"
+version = "0.1.0"
+description = "Scalable EDA, profiling, readiness checking, and banking MIS reporting using DuckDB and Polars."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Arun Barwa" }
+]
+keywords = [
+    "eda",
+    "profiling",
+    "banking",
+    "duckdb",
+    "polars",
+    "powerbi",
+    "tableau",
+    "data-quality",
+    "mis",
+    "analytics"
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Database",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Scientific/Engineering :: Information Analysis"
+]
+
+dependencies = [
+    "duckdb",
+    "polars",
+    "pandas",
+    "pyarrow",
+    "jinja2",
+    "plotly",
+    "openpyxl",
+    "xlsxwriter",
+    "pyyaml",
+    "typer",
+    "rich",
+    "faker"
+]
+
+[project.optional-dependencies]
+fg = ["fg-data-profiling"]
+dev = [
+    "pytest",
+    "ruff",
+    "black",
+    "mypy",
+    "pre-commit",
+    "build",
+    "twine"
+]
+docs = [
+    "mkdocs",
+    "mkdocs-material"
+]
+
+[project.scripts]
+bank-eda = "bank_eda_profiler.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/<your-username>/bank-eda-profiler"
+Repository = "https://github.com/<your-username>/bank-eda-profiler"
+Issues = "https://github.com/<your-username>/bank-eda-profiler/issues"
+Documentation = "https://github.com/<your-username>/bank-eda-profiler#readme"
+
+[tool.setuptools.packages.find]
+include = ["bank_eda_profiler*"]

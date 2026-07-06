@@ -1,0 +1,29 @@
+engine: duckdb
+privacy_mode: true
+sample_rows: 100000
+output_dir: test_result
+
+tables:
+  leads: data/lead_master.parquet
+  applications: data/account_application_funnel.parquet
+  accounts: data/account_master.parquet
+  sales: data/sales_hierarchy.parquet
+  targets: data/sales_target_achievement.parquet
+  transactions: data/transaction_fact.parquet
+  campaigns: data/campaign_master.parquet
+  vkyc: data/vkyc_session.parquet
+  customers: data/customer_master.parquet
+  holdings: data/customer_product_holding.parquet
+  complaints: data/service_request_complaint.parquet
+  events: data/app_event_log.parquet
+
+column_mapping:
+  leads:
+    lead_id: lead_id
+    created_at: lead_created_at
+    region: region
+  accounts:
+    account_id: account_id
+    customer_id: customer_id
+    open_date: account_open_date
+    balance: avg_monthly_balance
