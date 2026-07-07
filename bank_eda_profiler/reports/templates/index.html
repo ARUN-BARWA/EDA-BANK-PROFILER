@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Home - Bank EDA Profiler{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Banking Analytics Dashboard</h1>
+<p class="text-muted mb-4">Select a report below to view detailed insights, charts, and data summaries.</p>
+
+<div class="row">
+    {% for link in links %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title text-primary">{{ link.name }}</h5>
+                <p class="card-text text-muted flex-grow-1">View the {{ link.name }} analysis and visualizations.</p>
+                <a href="{{ link.url }}" class="btn btn-outline-primary mt-auto">View Report &rarr;</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

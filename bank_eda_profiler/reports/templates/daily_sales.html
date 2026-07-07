@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Daily Regional Sales Dashboard - Bank EDA Profiler{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-5">Daily Regional Sales Dashboard</h1>
+        <p class="text-muted">Analysis of daily sales and account openings by region.</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">{{ charts.kpi_card('Total Leads', df['leads_count'].sum() | int if 'leads_count' in df.columns else 'N/A') | safe }}</div>
+    <div class="col-md-4">{{ charts.kpi_card('Total Accounts', df['accounts_opened'].sum() | int if 'accounts_opened' in df.columns else 'N/A') | safe }}</div>
+    <div class="col-md-4">{{ charts.kpi_card('Avg Conversion %', (df['conversion_percent'].mean() | round(2)) ~ '%' if 'conversion_percent' in df.columns else 'N/A') | safe }}</div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                {{ charts.bar_chart(df, x='region', y='conversion_percent', title='Conversion % by Region', color='region') | safe }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">Detailed Data</div>
+            <div class="card-body overflow-auto">
+                {{ df.to_html(classes="table table-sm table-striped table-hover", index=False) | safe }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

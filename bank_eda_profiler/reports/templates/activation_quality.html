@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Activation Quality Report - Bank EDA Profiler{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-5">Activation Quality Report</h1>
+        <p class="text-muted">Analysis of account activation and funding quality.</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="insight-box shadow-sm">
+            <h5><i class="bi bi-lightbulb"></i> Key Insights</h5>
+            <ul class="mb-0">
+                {% for item in insights.generate_activation_insights(df) %}
+                <li>{{ item | safe }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">{{ charts.kpi_card('Accounts Opened', df['accounts_opened'].sum() | int) | safe }}</div>
+    <div class="col-md-3">{{ charts.kpi_card('Avg Funding %', (df['funded_account_percent'].mean() | round(2)) ~ '%') | safe }}</div>
+    <div class="col-md-3">{{ charts.kpi_card('Avg UPI Activation', (df['upi_activation_percent'].mean() | round(2)) ~ '%') | safe }}</div>
+    <div class="col-md-3">{{ charts.kpi_card('Avg Balance', '₹' ~ (df['average_balance'].mean() | int)) | safe }}</div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                {{ charts.bar_chart(df, x='region', y='upi_activation_percent', title='UPI Activation by Region', color='region') | safe }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                {{ charts.bar_chart(df, x='region', y='debit_card_activation_percent', title='Debit Card Activation by Region', color='region') | safe }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                {{ charts.correlation_heatmap(df, title='Activation Metrics Correlation') | safe }}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light">Detailed Data</div>
+            <div class="card-body overflow-auto">
+                {{ df.to_html(classes="table table-sm table-striped table-hover", index=False) | safe }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

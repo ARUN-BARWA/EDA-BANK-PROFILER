@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}EDA Profile Report - Bank EDA Profiler{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-5">Generic EDA Profile Report</h1>
+        <p class="text-muted">Dataset overview and column profiling.</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="insight-box shadow-sm">
+            <h5><i class="bi bi-lightbulb"></i> Dataset Overview</h5>
+            <ul class="mb-0">
+                {% for item in insights.generate_profile_insights(df) %}
+                <li>{{ item | safe }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">{{ charts.kpi_card('Rows', df.shape[0] | string) | safe }}</div>
+    <div class="col-md-3">{{ charts.kpi_card('Columns', df.shape[1] | string) | safe }}</div>
+    <div class="col-md-3">{{ charts.kpi_card('Missing %', (df.isnull().mean().mean() * 100 | round(2)) ~ '%') | safe }}</div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                {{ charts.missingness_chart(df, title='Missing Values by Column') | safe }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                {{ charts.correlation_heatmap(df, title='Correlation Heatmap') | safe }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">Raw Dataset Profile</div>
+            <div class="card-body overflow-auto">
+                {{ df.to_html(classes="table table-sm table-striped table-hover", index=False) | safe }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

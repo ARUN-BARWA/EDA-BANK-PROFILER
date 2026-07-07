@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Bank Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Banking Analytics Dashboard</h1>
+
+{% for report_name, table_html in data.reports.items() %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                {{ report_name.replace('_', ' ').title() }}
+            </div>
+            <div class="card-body overflow-auto">
+                {{ table_html | safe }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

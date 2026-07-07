@@ -16,7 +16,7 @@ venv.bak/
 # Project specifics
 config/report_config.yaml
 test_result/
-reports/
+/reports/
 data_train/
 *.parquet
 !data/*.parquet

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}{{ report.report_name }} Readiness{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <h1 class="mb-0">{{ report.report_name.replace('_', ' ').title() }} Readiness Report</h1>
+        {% set badge_class = 'badge-ready' if report.status == 'READY' else ('badge-notready' if report.status == 'NOT_READY' else 'badge-partial') %}
+        <span class="badge {{ badge_class }} fs-4 px-4 py-2">{{ report.status.replace('_', ' ') }}</span>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Readiness Score</h5>
+                <div class="d-flex align-items-center mb-2">
+                    <h2 class="mb-0 me-3">{{ report.score }}%</h2>
+                </div>
+                <div class="progress" style="height: 20px;">
+                    <div class="progress-bar {{ 'bg-success' if report.score == 100 else 'bg-warning' }}" 
+                         role="progressbar" 
+                         style="width: {{ report.score }}%;" 
+                         aria-valuenow="{{ report.score }}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light">Required Tables</div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <thead><tr><th>Table Name</th><th>Status</th></tr></thead>
+                    <tbody>
+                        {% for t in report.details.required_tables_available %}
+                        <tr><td>{{ t }}</td><td><span class="badge bg-success">Available</span></td></tr>
+                        {% endfor %}
+                        {% for t in report.details.required_tables_missing %}
+                        <tr><td>{{ t }}</td><td><span class="badge bg-danger">Missing</span></td></tr>
+                        {% endfor %}
+                        {% if not report.details.required_tables_available and not report.details.required_tables_missing %}
+                        <tr><td colspan="2" class="text-muted">No specific tables required.</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light">Required Fields</div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <thead><tr><th>Table</th><th>Field</th><th>Status</th></tr></thead>
+                    <tbody>
+                        {% for f in report.details.required_fields_available %}
+                        {% set parts = f.split('.') %}
+                        <tr><td>{{ parts[0] }}</td><td>{{ parts[1] }}</td><td><span class="badge bg-success">Available</span></td></tr>
+                        {% endfor %}
+                        {% for f in report.details.required_fields_missing %}
+                        {% set parts = f.split('.') %}
+                        <tr><td>{{ parts[0] }}</td><td>{{ parts[1] }}</td><td><span class="badge bg-danger">Missing</span></td></tr>
+                        {% endfor %}
+                        {% if not report.details.required_fields_available and not report.details.required_fields_missing %}
+                        <tr><td colspan="3" class="text-muted">No specific fields required.</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light">Optional Fields</div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <thead><tr><th>Table</th><th>Field</th><th>Status</th></tr></thead>
+                    <tbody>
+                        {% for f in report.details.optional_fields_available %}
+                        {% set parts = f.split('.') %}
+                        <tr><td>{{ parts[0] }}</td><td>{{ parts[1] }}</td><td><span class="badge bg-info">Available</span></td></tr>
+                        {% endfor %}
+                        {% for f in report.details.optional_fields_missing %}
+                        {% set parts = f.split('.') %}
+                        <tr><td>{{ parts[0] }}</td><td>{{ parts[1] }}</td><td><span class="badge bg-secondary">Missing</span></td></tr>
+                        {% endfor %}
+                        {% if not report.details.optional_fields_available and not report.details.optional_fields_missing %}
+                        <tr><td colspan="3" class="text-muted">No optional fields defined.</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light">Fallback Suggestions</div>
+            <div class="card-body">
+                {% if report.details.fallback_suggestions %}
+                <ul class="list-group list-group-flush">
+                    {% for suggestion in report.details.fallback_suggestions %}
+                    <li class="list-group-item">{{ suggestion }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">No fallback suggestions available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
