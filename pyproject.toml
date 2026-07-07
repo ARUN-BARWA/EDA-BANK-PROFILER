@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bank-eda-profiler"
-version = "0.1.0"
+version = "0.1.1"
 description = "Scalable EDA, profiling, readiness checking, and banking MIS reporting using DuckDB and Polars."
 readme = "README.md"
 requires-python = ">=3.10"
