@@ -9,6 +9,10 @@ from .io.column_mapping import suggest_column_mappings
 from .profiling.generic_profile import generate_profile
 from .profiling.privacy_scan import scan_for_pii
 from .profiling.fg_profile import generate_fg_or_fallback_profile
+from .io.entity_detection import EntityDetectionEngine
+from rich.prompt import Prompt
+from rich.console import Console
+
 
 from .banking.readiness import check_requirements
 from .banking.activation import generate_activation_quality
@@ -30,17 +34,70 @@ from .reports.tableau_export import export_tableau
 class BankProfiler:
     def __init__(self, data_sources: Optional[Dict[str, str]] = None, config: Optional[ReportConfig] = None):
         self.config = config or ReportConfig()
-        if data_sources:
-            self.config.tables.update(data_sources)
-            
         self.engine = get_engine(self.config.engine)
-        load_data(self.engine, self.config.tables)
-        
         self.schemas = {}
-        for table in self.config.tables.keys():
-            self.schemas[table] = list(infer_schema(self.engine, table).keys())
-            
         self.generated_reports = {}
+        
+        if data_sources:
+            self.load(data_sources)
+            
+    def load(self, sources, threshold: float = 80.0):
+        """
+        Flexible loader for datasets. Supports dict (manual mapping), 
+        list (auto-detect), or str (single file auto-detect).
+        """
+        console = Console()
+        if isinstance(sources, str):
+            sources = [sources]
+            
+        if isinstance(sources, dict):
+            # Manual mapping
+            self.config.tables.update(sources)
+            load_data(self.engine, sources)
+            for table in sources.keys():
+                self.schemas[table] = list(infer_schema(self.engine, table).keys())
+            console.print(f"[green]Successfully loaded {len(sources)} tables manually.[/green]")
+            return
+
+        if isinstance(sources, list):
+            # Auto-detection
+            detector = EntityDetectionEngine()
+            for file_path in sources:
+                # Infer table name purely for loading into the engine temporarily
+                temp_table = os.path.splitext(os.path.basename(file_path))[0]
+                load_data(self.engine, {temp_table: file_path})
+                cols = list(infer_schema(self.engine, temp_table).keys())
+                
+                best_match, confidence = detector.detect_entity(cols)
+                
+                if best_match and confidence >= threshold:
+                    console.print(f"[green]Detected [bold]{best_match}[/bold] in {file_path} (Confidence: {confidence:.1f}%)[/green]")
+                    entity_name = best_match
+                else:
+                    if best_match:
+                        console.print(f"[yellow]Low confidence ({confidence:.1f}%) for {file_path}. Best guess: {best_match}[/yellow]")
+                    else:
+                        console.print(f"[yellow]Could not confidently identify {file_path}.[/yellow]")
+                        
+                    choices = list(detector.schemas.keys()) + ["skip"]
+                    # Provide options
+                    entity_name = Prompt.ask(
+                        f"Assign entity for {file_path}", 
+                        choices=choices,
+                        default="skip"
+                    )
+                    
+                    if entity_name == "skip":
+                        console.print(f"Skipped {file_path}")
+                        continue
+                        
+                # Update config and schemas with the mapped entity name
+                self.config.tables[entity_name] = file_path
+                self.schemas[entity_name] = cols
+                # We need to make sure the engine has the data loaded under the actual entity name if it was different
+                if temp_table != entity_name:
+                    load_data(self.engine, {entity_name: file_path})
+
 
     @classmethod
     def from_config(cls, path: str) -> "BankProfiler":
