@@ -174,7 +174,7 @@ def generate_fg_or_fallback_profile(
         query = f"SELECT * FROM {table_name} LIMIT {actual_sample_rows}"
     
     # Execute and convert to pandas
-    df = engine.execute(query).df()
+    df = engine.execute_query(query)
     
     if df.empty:
         return None
